@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="Contato.Business/MedTeste.Business.csproj" />
+  <Project Path="Contato.Data/MedTeste.Data.csproj" />
+  <Project Path="Contato.Domain/MedTeste.Domain.csproj" />
+  <Project Path="Contato.Web/MedTeste.Web.csproj" />
+</Solution>

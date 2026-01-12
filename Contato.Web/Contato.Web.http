@@ -1,0 +1,6 @@
+@Contato.Web_HostAddress = http://localhost:5210
+
+GET {{Contato.Web_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
