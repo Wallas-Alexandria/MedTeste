@@ -15,19 +15,10 @@ namespace MedTeste.Business.Service
         }
         public async Task AdicionarContatoAsync(CriarContatoDTO contato)
         {
-            var resultado = ValidacaoContato.ValidarContato(contato);
-            if (!resultado.IsValid)
-            {
-                throw new Exception(string.Join("; ", resultado.Erros));
-            }
-            var novoContato = new Contato
-           {
-               Nome = contato.Nome,
-               DtNascimento = contato.DtNascimento,
-               Sexo = contato.Sexo
-           };
+            var novoContato = Contato.CriarContato(contato.Nome, contato.DtNascimento, contato.Sexo);
 
-            await _contatoRepository.AdicionarAsync(novoContato);
+            _contatoRepository.Adicionar(novoContato);
+            await _contatoRepository.Commit();
         }
 
         public async Task<Contato> AtivarDesativarContatoAsync(Guid id)
@@ -37,41 +28,37 @@ namespace MedTeste.Business.Service
             {
                 throw new Exception("Contato não encontrado!");
             }
-            contato.Ativo = !contato.Ativo;
-            await _contatoRepository.AtualizarAsync(contato);
+            //contato.Ativo = !contato.Ativo;
+            _contatoRepository.Atualizar(contato);
+            await _contatoRepository.Commit();
             return contato;
         }
 
-        public async Task AtualizarContatoAsync(EditarContatoDTO contato)
+        public async Task AtualizarContatoAsync(Guid id, EditarContatoDTO contato)
         {
+            var contatoExiste = await _contatoRepository.PegarPorIdAsync(id);
 
-            var contatoExiste = await _contatoRepository.PegarPorIdAsync(contato.Id);
-            var resultado = ValidacaoContato.ValidarContatoEditado(contato);
-
-            if (!resultado.IsValid)
+            if (contatoExiste == null)
             {
-                throw new Exception(string.Join("; ", resultado.Erros));
+                throw new Exception("Contato não encontrado!");
             }
 
-            var contatoAtualizar = new Contato
-            {
-                Id = contato.Id,
-                Nome = contato.Nome,
-                DtNascimento = contato.DtNascimento,
-                Sexo = contato.Sexo,
-                Ativo = contato.Ativo
-            };
-            await _contatoRepository.AtualizarAsync(contatoAtualizar);
+            contatoExiste.AtualizarContato(contato.Nome, contato.DtNascimento, contato.Sexo, contato.Ativo);
+
+            await _contatoRepository.Commit();
         }
 
         public async Task ExcluirContatoAsync(Guid id)
         {
             var contato = await _contatoRepository.PegarPorIdAsync(id);
+
             if (contato == null)
             {
                 throw new Exception("Contato não encontrado!");
             }
-            await _contatoRepository.ExcluirAsync(contato.Id);
+
+            _contatoRepository.Excluir(contato);
+            await _contatoRepository.Commit();
         }
 
         public async Task<Contato> PegarContatoPorIdAsync(Guid id)

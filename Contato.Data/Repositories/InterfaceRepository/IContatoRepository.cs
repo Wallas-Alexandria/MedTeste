@@ -6,9 +6,10 @@ namespace MedTeste.Data.Repositories.InterfaceRepository
     {
         Task<List<Contato>> PegarTodosAsync();
         Task<Contato> PegarPorIdAsync(Guid id);
-        Task AdicionarAsync(Contato contato);
-        Task AtualizarAsync(Contato contato);
-        Task ExcluirAsync(Guid id);
+        void Adicionar(Contato contato);
+        void Atualizar(Contato contato);
+        void Excluir(Contato contato);
         Task<List<Contato>> PegarTodosAtivosAsync();
+        Task Commit();
     }
 }

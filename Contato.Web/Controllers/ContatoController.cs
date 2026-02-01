@@ -41,8 +41,7 @@ namespace MedTeste.Web.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Atualizar(Guid id, [FromBody] EditarContatoDTO contato)
         {
-            contato.Id = id;
-            await _contatoService.AtualizarContatoAsync(contato);
+            await _contatoService.AtualizarContatoAsync(id, contato);
             return NoContent();
         }
 
@@ -51,7 +50,6 @@ namespace MedTeste.Web.Controllers
         {
             await _contatoService.ExcluirContatoAsync(id);
             return NoContent();
-
         }
     }
 }

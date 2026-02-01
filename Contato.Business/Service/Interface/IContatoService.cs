@@ -8,7 +8,7 @@ namespace MedTeste.Business.Service.Interface
         Task<List<Contato>> PegarTodosContatosAsync();
         Task<Contato> PegarContatoPorIdAsync(Guid id);
         Task AdicionarContatoAsync(CriarContatoDTO contato);
-        Task AtualizarContatoAsync(EditarContatoDTO contato);
+        Task AtualizarContatoAsync(Guid id, EditarContatoDTO contato);
         Task ExcluirContatoAsync(Guid id);
         Task<Contato> AtivarDesativarContatoAsync(Guid id);
     }

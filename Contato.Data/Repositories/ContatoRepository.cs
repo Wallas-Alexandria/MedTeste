@@ -12,43 +12,24 @@ namespace MedTeste.Data.Repositories
         {
             _context = context;
         }
-        public async Task AdicionarAsync(Contato contato)
+        public void Adicionar(Contato contato)
         {
-            await _context.Contatos.AddAsync(contato);
-            await _context.SaveChangesAsync();
+             _context.Contatos.Add(contato);
         }
 
-        public async Task AtualizarAsync(Contato contato)
+        public void Atualizar(Contato contato)
         {
-            var contatoExiste = _context.Contatos.Find(contato.Id);
-            if (contatoExiste != null)
-            {
-                contatoExiste.Nome = contato.Nome;
-                contatoExiste.DtNascimento = contato.DtNascimento;
-                contatoExiste.Sexo = contato.Sexo;
-                contatoExiste.Ativo = contato.Ativo;
-
-                await _context.SaveChangesAsync();
-            }
-            else
-            {
-               throw new Exception("Contato não encontrado!");
-            }
+            _context.Contatos.Update(contato);
         }
 
-        public async Task ExcluirAsync(Guid id)
+        public void Excluir(Contato contato)
         {
-            var contato = await _context.Contatos.FindAsync(id);
-            if (contato != null)
-            {
-                _context.Contatos.Remove(contato);
-                await _context.SaveChangesAsync();
-            }
+            _context.Contatos.Remove(contato);
         }
 
         public async Task<Contato> PegarPorIdAsync(Guid id)
         {
-            return await _context.Contatos.FindAsync(id);
+            return await _context.Contatos.FirstOrDefaultAsync(c => c.Id == id);
         }
 
         public async Task<List<Contato>> PegarTodosAsync()
@@ -60,5 +41,11 @@ namespace MedTeste.Data.Repositories
         {
             return await _context.Contatos.Where(c => c.Ativo).ToListAsync();
         }
+
+        public async Task Commit()
+        {
+            await _context.SaveChangesAsync();
+        }
+
     }
 }
