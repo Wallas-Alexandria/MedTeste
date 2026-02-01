@@ -32,17 +32,50 @@ namespace MedTeste.Domain.Entities
             Sexo = sexo;
         }
 
-        public void AtualizarContato(string nome, DateTime dtNascimento, Sexo sexo, bool ativo)
+        public void AtualizarContato(string nome, DateTime dtNascimento, Sexo sexo)
         {
+            ValidarContato(nome, dtNascimento, sexo);
             Nome = nome;
             DtNascimento = dtNascimento;
             Sexo = sexo;
-            Ativo = ativo;
+            ValidarIdade(this.Idade);
         }
 
         public static Contato CriarContato(string nome, DateTime dtNascimento, Sexo sexo)
         {
-            return new Contato(nome, dtNascimento, sexo);
+            var contato = new Contato(nome, dtNascimento, sexo);
+
+            ValidarContato(nome, dtNascimento, sexo);
+            ValidarIdade(contato.Idade);
+
+            return contato;
+        }
+
+        private static void ValidarContato(string nome, DateTime dtNascimento, Sexo sexo)
+        {
+            if (dtNascimento > DateTime.Today)
+            {
+                throw new ArgumentException("A data de nascimento não pode ser maior que a data atual.");
+            }
+        }
+
+        private static void ValidarIdade(int idade)
+        {
+
+            if (idade == 0)
+                throw new ArgumentException("A idade não pode ser igual a zero.");
+
+            if (idade < 18)
+                throw new ArgumentException("O contato deve ser maior de idade.");
+
+        }
+
+        public void DesativarContato()
+        {
+            if (!Ativo)
+                return;
+
+            Ativo = false;
         }
 
     }

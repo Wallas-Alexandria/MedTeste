@@ -10,6 +10,6 @@ namespace MedTeste.Business.Service.Interface
         Task AdicionarContatoAsync(CriarContatoDTO contato);
         Task AtualizarContatoAsync(Guid id, EditarContatoDTO contato);
         Task ExcluirContatoAsync(Guid id);
-        Task<Contato> AtivarDesativarContatoAsync(Guid id);
+        Task DesativarContatoAsync(Guid id);
     }
 }

@@ -4,7 +4,6 @@ namespace MedTeste.Data.Repositories.InterfaceRepository
 {
     public interface IContatoRepository
     {
-        Task<List<Contato>> PegarTodosAsync();
         Task<Contato> PegarPorIdAsync(Guid id);
         void Adicionar(Contato contato);
         void Atualizar(Contato contato);

@@ -21,17 +21,16 @@ namespace MedTeste.Business.Service
             await _contatoRepository.Commit();
         }
 
-        public async Task<Contato> AtivarDesativarContatoAsync(Guid id)
+        public async Task DesativarContatoAsync(Guid id)
         {
             var contato = await _contatoRepository.PegarPorIdAsync(id);
             if (contato == null)
             {
                 throw new Exception("Contato não encontrado!");
             }
-            //contato.Ativo = !contato.Ativo;
-            _contatoRepository.Atualizar(contato);
+
+            contato.DesativarContato();
             await _contatoRepository.Commit();
-            return contato;
         }
 
         public async Task AtualizarContatoAsync(Guid id, EditarContatoDTO contato)
@@ -43,7 +42,7 @@ namespace MedTeste.Business.Service
                 throw new Exception("Contato não encontrado!");
             }
 
-            contatoExiste.AtualizarContato(contato.Nome, contato.DtNascimento, contato.Sexo, contato.Ativo);
+            contatoExiste.AtualizarContato(contato.Nome, contato.DtNascimento, contato.Sexo);
 
             await _contatoRepository.Commit();
         }

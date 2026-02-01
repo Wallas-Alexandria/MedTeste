@@ -32,11 +32,6 @@ namespace MedTeste.Data.Repositories
             return await _context.Contatos.FirstOrDefaultAsync(c => c.Id == id);
         }
 
-        public async Task<List<Contato>> PegarTodosAsync()
-        {
-            return await _context.Contatos.ToListAsync();
-        }
-
         public async Task<List<Contato>> PegarTodosAtivosAsync()
         {
             return await _context.Contatos.Where(c => c.Ativo).ToListAsync();
