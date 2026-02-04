@@ -1,6 +1,5 @@
 ﻿using MedTeste.Business.DTO;
 using MedTeste.Business.Service.Interface;
-using MedTeste.Business.Validacao;
 using MedTeste.Data.Repositories.InterfaceRepository;
 using MedTeste.Domain.Entities;
 
