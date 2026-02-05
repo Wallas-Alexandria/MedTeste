@@ -6,10 +6,10 @@ namespace MedTeste.Business.Service.Interface
     public interface IContatoService
     {
         Task<List<Contato>> PegarTodosContatosAsync();
-        Task<Contato> PegarContatoPorIdAsync(Guid id);
+        Task<Result<bool>> PegarContatoPorIdAsync(Guid id);
         Task AdicionarContatoAsync(CriarContatoDTO contato);
-        Task AtualizarContatoAsync(Guid id, EditarContatoDTO contato);
-        Task ExcluirContatoAsync(Guid id);
-        Task DesativarContatoAsync(Guid id);
+        Task<Result<bool>> AtualizarContatoAsync(Guid id, EditarContatoDTO contato);
+        Task<Result<bool>> ExcluirContatoAsync(Guid id);
+        Task<Result<bool>> DesativarContatoAsync(Guid id);
     }
 }

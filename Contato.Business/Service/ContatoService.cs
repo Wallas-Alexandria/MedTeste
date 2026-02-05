@@ -20,53 +20,63 @@ namespace MedTeste.Business.Service
             await _contatoRepository.Commit();
         }
 
-        public async Task DesativarContatoAsync(Guid id)
+        public async Task<Result<bool>> DesativarContatoAsync(Guid id)
         {
             var contato = await _contatoRepository.PegarPorIdAsync(id);
+
             if (contato == null)
             {
-                throw new Exception("Contato não encontrado!");
+                return Result<bool>.Failure("Contato não encontrado!");
             }
 
             contato.DesativarContato();
             await _contatoRepository.Commit();
+            return Result<bool>.Success(true);
         }
 
-        public async Task AtualizarContatoAsync(Guid id, EditarContatoDTO contato)
+        public async Task<Result<bool>> AtualizarContatoAsync(Guid id, EditarContatoDTO contato)
         {
             var contatoExiste = await _contatoRepository.PegarPorIdAsync(id);
 
             if (contatoExiste == null)
             {
-                throw new Exception("Contato não encontrado!");
+                return Result<bool>.Failure("Contato não encontrado!");
             }
 
             contatoExiste.AtualizarContato(contato.Nome, contato.DtNascimento, contato.Sexo);
-
             await _contatoRepository.Commit();
+            return Result<bool>.Success(true);
         }
 
-        public async Task ExcluirContatoAsync(Guid id)
+        public async Task<Result<bool>> ExcluirContatoAsync(Guid id)
         {
             var contato = await _contatoRepository.PegarPorIdAsync(id);
 
-            if (contato == null)
+            if (contato ==  null)
             {
-                throw new Exception("Contato não encontrado!");
+                return Result<bool>.Failure("Contato não encontrado!");
             }
 
             _contatoRepository.Excluir(contato);
             await _contatoRepository.Commit();
+            return Result<bool>.Success(true);
         }
 
-        public async Task<Contato> PegarContatoPorIdAsync(Guid id)
+        public async Task<Result<bool>> PegarContatoPorIdAsync(Guid id)
         {
             var contato = await _contatoRepository.PegarPorIdAsync(id);
+
+            if (contato ==  null)
+            {
+                return Result<bool>.Failure("Contato não encontrado!");
+            }
+
             if (contato.Ativo == false)
             {
-               throw new Exception("Contato está inativo!");
+                return Result<bool>.Failure("Contato está inativo!");
             }
-            return contato;
+
+            return Result<bool>.Success(true);
         }
 
         public async Task<List<Contato>> PegarTodosContatosAsync()

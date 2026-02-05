@@ -1,5 +1,6 @@
 ﻿using MedTeste.Business.DTO;
 using MedTeste.Business.Service.Interface;
+using MedTeste.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MedTeste.Web.Controllers
@@ -17,30 +18,20 @@ namespace MedTeste.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> RetornarTodos()
         {
-            try
-            {
-                var contatos = await _contatoService.PegarTodosContatosAsync();
-                return Ok(contatos);
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
+              var contatos = await _contatoService.PegarTodosContatosAsync();
+              return Ok(contatos);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> RetornarPorId(Guid id)
         {
-            try
-            {
-                var contato = await _contatoService.PegarContatoPorIdAsync(id);
+            var result = await _contatoService.PegarContatoPorIdAsync(id);
 
-                return Ok(contato);
-            }
-            catch (ArgumentException ex)
+            if (!result.IsSuccess)
             {
-                return BadRequest(new { message = ex.Message });
+                return BadRequest(new { message = result.Error });
             }
+            return Ok(result);
 
         }
 
@@ -61,45 +52,37 @@ namespace MedTeste.Web.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Atualizar(Guid id, [FromBody] EditarContatoDTO contato)
         {
-            try
+            var result = await _contatoService.AtualizarContatoAsync(id, contato);
+
+            if (!result.IsSuccess)
             {
-                await _contatoService.AtualizarContatoAsync(id, contato);
-                return NoContent();
+                return BadRequest(new {message = result.Error});
             }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
+            return NoContent();
 
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Excluir(Guid id)
         {
-            try
+            var result = await _contatoService.ExcluirContatoAsync(id);
+            if (!result.IsSuccess)
             {
-                await _contatoService.ExcluirContatoAsync(id);
-                return NoContent();
+                return BadRequest(new { message = result.Error });
             }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
+            return NoContent();
 
         }
 
         [HttpPatch("{id}")]
         public async Task<IActionResult> Desativar(Guid id)
         {
-            try
+            var result = await _contatoService.DesativarContatoAsync(id);
+            if (!result.IsSuccess)
             {
-                await _contatoService.DesativarContatoAsync(id);
-                return NoContent();
+                return BadRequest(new { message = result.Error });
             }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
+            return NoContent();
 
         }
 
