@@ -12,12 +12,19 @@ namespace MedTeste.Business.Service
         {
             _contatoRepository = contatoRepository;
         }
-        public async Task AdicionarContatoAsync(CriarContatoDTO contato)
+
+        public async Task<Result<bool>> AdicionarContatoAsync(CriarContatoDTO contato)
         {
             var novoContato = Contato.CriarContato(contato.Nome, contato.DtNascimento, contato.Sexo);
 
-            _contatoRepository.Adicionar(novoContato);
+            if (!novoContato.IsSuccess)
+            {
+                return Result<bool>.Failure(novoContato.Error);
+            }
+
+            _contatoRepository.Adicionar(novoContato.Data);
             await _contatoRepository.Commit();
+            return Result<bool>.Success(true);
         }
 
         public async Task<Result<bool>> DesativarContatoAsync(Guid id)
@@ -43,7 +50,13 @@ namespace MedTeste.Business.Service
                 return Result<bool>.Failure("Contato não encontrado!");
             }
 
-            contatoExiste.AtualizarContato(contato.Nome, contato.DtNascimento, contato.Sexo);
+            var result = contatoExiste.AtualizarContato(contato.Nome, contato.DtNascimento, contato.Sexo);
+
+            if (!result.IsSuccess)
+            {
+                return Result<bool>.Failure(result.Error);
+            }
+
             await _contatoRepository.Commit();
             return Result<bool>.Success(true);
         }
@@ -62,27 +75,32 @@ namespace MedTeste.Business.Service
             return Result<bool>.Success(true);
         }
 
-        public async Task<Result<bool>> PegarContatoPorIdAsync(Guid id)
+        public async Task<Result<ContatoDetalhesDTO>> PegarContatoPorIdAsync(Guid id)
         {
             var contato = await _contatoRepository.PegarPorIdAsync(id);
 
             if (contato ==  null)
             {
-                return Result<bool>.Failure("Contato não encontrado!");
+                return Result<ContatoDetalhesDTO>.Failure("Contato não encontrado!");
             }
 
             if (contato.Ativo == false)
             {
-                return Result<bool>.Failure("Contato está inativo!");
+                return Result<ContatoDetalhesDTO>.Failure("Contato está inativo!");
             }
 
-            return Result<bool>.Success(true);
+            var dto = ContatoDetalhesDTO.Map(contato);
+
+            return Result<ContatoDetalhesDTO>.Success(dto);
         }
 
-        public async Task<List<Contato>> PegarTodosContatosAsync()
+        public async Task<Result<List<ContatoDetalhesDTO>>> PegarTodosContatosAsync()
         {
             var contatos = await _contatoRepository.PegarTodosAtivosAsync();
-            return contatos;
+
+            var listaContatos = contatos.Select(ContatoDetalhesDTO.Map).ToList();
+
+            return Result<List<ContatoDetalhesDTO>>.Success(listaContatos);
         }
 
 

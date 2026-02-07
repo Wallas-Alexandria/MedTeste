@@ -16,40 +16,57 @@ namespace MedTeste.Web.Controllers
         }
 
         [HttpGet]
+        [ProducesResponseType(typeof(List<ContatoDetalhesDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> RetornarTodos()
         {
-              var contatos = await _contatoService.PegarTodosContatosAsync();
-              return Ok(contatos);
+            var result = await _contatoService.PegarTodosContatosAsync();
+
+            if (!result.IsSuccess)
+            {
+                return BadRequest(new { message = result.Error });
+            }
+              return Ok(result.Data);
         }
 
         [HttpGet("{id}")]
+        [ProducesResponseType(typeof(ContatoDetalhesDTO), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> RetornarPorId(Guid id)
         {
             var result = await _contatoService.PegarContatoPorIdAsync(id);
 
             if (!result.IsSuccess)
             {
+                if (result.Error.Contains("não encontrado"))
+                {
+                    return NotFound(new { message = result.Error });
+                }
                 return BadRequest(new { message = result.Error });
             }
-            return Ok(result);
+            return Ok(result.Data);
 
         }
 
         [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Adicionar([FromBody] CriarContatoDTO contato)
         {
-            try
+            var result = await _contatoService.AdicionarContatoAsync(contato);
+
+            if (!result.IsSuccess)
             {
-                await _contatoService.AdicionarContatoAsync(contato);
-                return Ok();
+                return BadRequest(new { message = result.Error });
             }
-            catch (ArgumentException ex)
-            {
-                return BadRequest( new { message = ex.Message });
-            }
+
+            return Ok();
         }
 
         [HttpPut("{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Atualizar(Guid id, [FromBody] EditarContatoDTO contato)
         {
             var result = await _contatoService.AtualizarContatoAsync(id, contato);
@@ -63,6 +80,8 @@ namespace MedTeste.Web.Controllers
         }
 
         [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Excluir(Guid id)
         {
             var result = await _contatoService.ExcluirContatoAsync(id);
@@ -75,6 +94,8 @@ namespace MedTeste.Web.Controllers
         }
 
         [HttpPatch("{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Desativar(Guid id)
         {
             var result = await _contatoService.DesativarContatoAsync(id);

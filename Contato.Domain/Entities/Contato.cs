@@ -7,67 +7,86 @@ namespace MedTeste.Domain.Entities
     {
         public string Nome { get; private set; } = string.Empty;
         public DateTime DtNascimento { get; private set; }
-        public Sexo Sexo { get; private set; }
+        public char? Sexo { get; private set; }
         [NotMapped]
-        public int Idade
-        {
-            get
-            {
-                var hoje = DateTime.Today;
-                var idade = hoje.Year - DtNascimento.Year;
-                if (DtNascimento.Date > hoje.AddYears(-idade))
-                {
-                    idade--;
-                }
-                return idade;
-            }
-        }
+        public int Idade => CalcularIdade(DtNascimento);
         public bool Ativo { get; private set; } = true;
 
         protected Contato() { }
-        public Contato(string nome, DateTime dtNascimento, Sexo sexo)
+        public Contato(string nome, DateTime dtNascimento, char? sexo)
         {
             Nome = nome;
             DtNascimento = dtNascimento;
             Sexo = sexo;
         }
 
-        public void AtualizarContato(string nome, DateTime dtNascimento, Sexo sexo)
+        public static Result<Contato> CriarContato(string nome, DateTime dtNascimento, char? sexo)
         {
-            ValidarContato(nome, dtNascimento, sexo);
+            var validar = ValidarContato(nome, dtNascimento, sexo);
+            if (!validar.IsSuccess)
+            {
+                return Result<Contato>.Failure(validar.Error);
+            }
+                return Result<Contato>.Success(new Contato(nome, dtNascimento, sexo));
+        }
+
+        public Result<bool> AtualizarContato(string nome, DateTime dtNascimento, char? sexo)
+        {
+            var validar = ValidarContato(nome, dtNascimento, sexo);
+            if (!validar.IsSuccess)
+            {
+                return Result<bool>.Failure(validar.Error);
+            }
+
             Nome = nome;
             DtNascimento = dtNascimento;
             Sexo = sexo;
-            ValidarIdade(this.Idade);
+
+            return Result<bool>.Success(true);
         }
 
-        public static Contato CriarContato(string nome, DateTime dtNascimento, Sexo sexo)
+        private static Result<bool> ValidarContato(string nome, DateTime dtNascimento, char? sexo)
         {
-            var contato = new Contato(nome, dtNascimento, sexo);
+            if (string.IsNullOrWhiteSpace(nome))
+            {
+                return Result<bool>.Failure("O nome é obrigatório.");
+            }
 
-            ValidarContato(nome, dtNascimento, sexo);
-            ValidarIdade(contato.Idade);
+            if (dtNascimento == DateTime.MinValue)
+            {
+                return Result<bool>.Failure("A data de nascimento é obrigatória.");
+            }
 
-            return contato;
-        }
+            if (!sexo.HasValue)
+            {
+                return Result<bool>.Failure("O Sexo é obrigatório.");
+            }
 
-        private static void ValidarContato(string nome, DateTime dtNascimento, Sexo sexo)
-        {
+            if (sexo != 'M' && sexo != 'F')
+            {
+                return Result<bool>.Failure("Sexo inválido. Digite 'M' ou 'F'.");
+            }
+
             if (dtNascimento > DateTime.Today)
             {
-                throw new ArgumentException("A data de nascimento não pode ser maior que a data atual.");
+                return Result<bool>.Failure("A data de nascimento não pode ser futura.");
             }
+                
+            var idade = CalcularIdade(dtNascimento);
+            if (idade < 18)
+            {
+                return Result<bool>.Failure("O contato deve ser maior de idade.");
+            }
+
+            return Result<bool>.Success(true);
         }
 
-        private static void ValidarIdade(int idade)
+        private static int CalcularIdade(DateTime data)
         {
-
-            if (idade == 0)
-                throw new ArgumentException("A idade não pode ser igual a zero.");
-
-            if (idade < 18)
-                throw new ArgumentException("O contato deve ser maior de idade.");
-
+            var hoje = DateTime.Today;
+            var idade = hoje.Year - data.Year;
+            if (data.Date > hoje.AddYears(-idade)) idade--;
+            return idade;
         }
 
         public void DesativarContato()
