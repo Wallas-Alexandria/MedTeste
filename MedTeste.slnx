@@ -3,4 +3,5 @@
   <Project Path="Contato.Data/MedTeste.Data.csproj" />
   <Project Path="Contato.Domain/MedTeste.Domain.csproj" />
   <Project Path="Contato.Web/MedTeste.Web.csproj" />
+  <Project Path="MedTeste.Tests/MedTeste.Tests.csproj" Id="de8f8fb5-cbe8-465b-8c43-e1bcc0fe7475" />
 </Solution>
