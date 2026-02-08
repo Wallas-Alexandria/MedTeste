@@ -1,6 +1,5 @@
 ﻿using MedTeste.Business.DTO;
 using MedTeste.Business.Service.Interface;
-using MedTeste.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MedTeste.Web.Controllers
@@ -50,7 +49,7 @@ namespace MedTeste.Web.Controllers
         }
 
         [HttpPost]
-        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Adicionar([FromBody] CriarContatoDTO contato)
         {

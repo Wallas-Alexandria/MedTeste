@@ -1,6 +1,4 @@
-﻿using MedTeste.Domain.Enum;
-
-namespace MedTeste.Business.DTO
+﻿namespace MedTeste.Business.DTO
 {
     public class CriarContatoDTO
     {

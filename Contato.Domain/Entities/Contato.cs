@@ -1,11 +1,10 @@
-﻿using MedTeste.Domain.Enum;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MedTeste.Domain.Entities
 {
     public class Contato : Entity
     {
-        public string Nome { get; private set; } = string.Empty;
+        public string Nome { get; private set; }
         public DateTime DtNascimento { get; private set; }
         public char? Sexo { get; private set; }
         [NotMapped]
@@ -52,30 +51,26 @@ namespace MedTeste.Domain.Entities
                 return Result<bool>.Failure("O nome é obrigatório.");
             }
 
-            if (dtNascimento == DateTime.MinValue)
-            {
-                return Result<bool>.Failure("A data de nascimento é obrigatória.");
-            }
-
-            if (!sexo.HasValue)
-            {
-                return Result<bool>.Failure("O Sexo é obrigatório.");
-            }
-
-            if (sexo != 'M' && sexo != 'F')
-            {
-                return Result<bool>.Failure("Sexo inválido. Digite 'M' ou 'F'.");
-            }
-
             if (dtNascimento > DateTime.Today)
             {
                 return Result<bool>.Failure("A data de nascimento não pode ser futura.");
             }
-                
+
             var idade = CalcularIdade(dtNascimento);
+
+            if (idade == 0)
+            {
+                return Result<bool>.Failure("Idade não pode ser igual a zero.");
+            }
+
             if (idade < 18)
             {
                 return Result<bool>.Failure("O contato deve ser maior de idade.");
+            }
+
+            if (sexo.HasValue && sexo != 'M' && sexo != 'F')
+            {
+                return Result<bool>.Failure("Sexo inválido. Digite 'M' ou 'F'.");
             }
 
             return Result<bool>.Success(true);
